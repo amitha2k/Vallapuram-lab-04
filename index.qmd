@@ -1,0 +1,50 @@
+---
+  title: "9041 Lab 4"
+  author: Amitha Vallapuram
+  date: Nov 11 2026
+  format:
+    html:
+      toc: true
+  execute:
+    echo: false
+    warning: false
+    message: false
+---
+
+```{r, setup}
+library(glmmTMB)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(broom.mixed)
+library(performance)
+library(gt)
+library(readr)
+library(DHARMa)
+library(ggeffects)
+library(titanic)
+
+titanic <- titanic_train
+
+#Keep the same complete-case sample for every model
+titanic <- titanic |>
+  select(Survived, Sex, Age, Pclass) |>
+  drop_na() |>
+  mutate(
+    Sex.Binary = case_when(
+      Sex == "male" ~ 0,
+      Sex == "female" ~ 1)) |>
+  mutate(
+    Survived.Char = case_when(
+      Survived == 0 ~ "Died",
+      Survived == 1 ~ "Survived")) |>
+  mutate(
+    Pclass.Char = case_when(
+      Pclass == "1" ~ "First Class",
+      Pclass == "2" ~ "Second Class",
+      Pclass == "3" ~ "Third Class")) |>
+  mutate(Pclass = factor(Pclass, levels = c(1, 2, 3))) |>
+  select(Survived, Survived.Char, Sex, Sex.Binary, Pclass, Pclass.Char, Age)
+
+n <- nrow(titanic)
+```
