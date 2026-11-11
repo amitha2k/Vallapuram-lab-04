@@ -11,6 +11,25 @@
     message: false
 ---
 
+## Purpose
+
+This report demonstrates a complete binary logistic regression workflow. We will use the titanic data set which includes the demographics of passengers of the Titanic.
+
+Our objectives are to:
+
+1.  **Specify and estimate** several plausible competing binary logistic regression models using `glmmTMB`.
+
+2.  **Compare nested models** using likelihood-ratio tests (χ²).
+
+3.  **Evaluate overall model fit** using AIC and BIC.
+
+4.  **Examine model diagnostics** and assess assumptions relevant to binary logistic regression.
+
+5.  **Select and interpret** a preferred model, including transforming log-odds coefficients into odds ratios.
+
+6.  **Report results reproducibly** using tables, figures, and Quarto.
+
+
 ```{r, setup}
 library(glmmTMB)
 library(dplyr)
@@ -48,3 +67,55 @@ titanic <- titanic |>
 
 n <- nrow(titanic)
 ```
+
+
+
+This dataset contains data on **714 passengers**. The binary outcome variable is `Survived`: whether the passenger survived or died in the Titanic crash. Several other variables summarize characteristics of the Titanic passengers that could influence survival.
+
+For this lab, we will focus on four variables:
+
+|  |  |  |
+|------------------------|------------------------|------------------------|
+| **Variable** | **Description** | **Role** |
+| Survived | Whether a passenger survived or died in the crash | Outcome |
+| Sex | Sex reported on legal documents | Predictor |
+| Age | Self-reported age | Predictor |
+| Pclass | What type of ticket was purchased; our proxy for socioeconomic status (SES) | Predictor |
+
+## 1. Exploring the Data
+
+```{r, Age table}
+
+titanic |>
+  summarise(Mean = mean(Age), SD = sd(Age), Min = min(Age), Max = max(Age)) |>
+  gt() |>
+  tab_header(title = "Descriptive Statistics for Age") |>
+  fmt_number(decimals = 2)
+```
+
+```{r, Survived counts table}
+titanic |> count(Survived.Char) |> gt() |> tab_header(title = "Survival")
+
+```
+
+```{r, Sex counts}
+titanic |> count(Sex) |> gt() |> tab_header(title = "Sex")
+```
+
+```{r, Class counts}
+
+titanic |> count(Pclass.Char) |> gt() |> tab_header(title = "Ticket Class")
+```
+### Discussion
+The 714 passengers ranged in age from months old children to 80 years, with an average age of about 30. None of the categorical variables were evenly distributed. More passengers died than survived, and about a third of passengers were male. Ticket class was also unbalanced: about half of passengers held third-class tickets, while first and second class were similar in size. The patterns of this data are as I would expect and is consistent with what I have heard about the titanic: a high number of deaths, more male than female passengers, and a large number of third class passengers.
+
+## 2. Specifying competing binary logistic regression models
+
+### My predictions
+
+Before fitting your models, write a short paragraph explaining why you expect the three predictors to be associated with survival of the Titanic crash.
+
+Consider the following questions:
+
+Based on what I saw in the movie, it seems like women and children were prioritized so I would expect more women and more young children to have survived. Higher class passengers would have been prioritized at this time so a higher proportion of the first and second class passengers would have survived compared to the third class. I wouldn't be surprised if more of the first two classes survived than the third class in absolute numbers too, despite there being more third class passengers than each of the other two classes.
+
