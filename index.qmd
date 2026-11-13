@@ -113,9 +113,19 @@ The 714 passengers ranged in age from months old children to 80 years, with an a
 
 ### My predictions
 
-Before fitting your models, write a short paragraph explaining why you expect the three predictors to be associated with survival of the Titanic crash.
+Based on what I saw in the movie, it seems like women and children were prioritized so I would expect female passengers to have higher odds of survival and children to have hgiher odds of survival. Also based on the movie, the lower class passengers were in the lower floors, far away from the lifeboats area. I predict that first and second class passengers would have higher odds at surviving compared to the third class passengers.
 
-Consider the following questions:
+```{r, 2.2 model fit}
+mod0 <- glmmTMB(Survived ~ 1,
+  data = titanic, family = binomial(link = "logit"))
 
-Based on what I saw in the movie, it seems like women and children were prioritized so I would expect more women and more young children to have survived. Higher class passengers would have been prioritized at this time so a higher proportion of the first and second class passengers would have survived compared to the third class. I wouldn't be surprised if more of the first two classes survived than the third class in absolute numbers too, despite there being more third class passengers than each of the other two classes.
+mod1 <- glmmTMB(Survived ~ Sex.Binary,
+  data = titanic, family = binomial(link = "logit"))
+
+mod2 <- glmmTMB(Survived ~ Sex.Binary + Pclass,
+  data = titanic, family = binomial(link = "logit"))
+
+mod3 <- glmmTMB(Survived ~ Sex.Binary + Pclass + Age,
+  data = titanic, family = binomial(link = "logit"))
+```
 
